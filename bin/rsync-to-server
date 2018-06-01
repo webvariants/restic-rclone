@@ -12,7 +12,7 @@ if [ ! -e ".uuid" ]; then
 	exit -1
 fi
 
-if [ -z "$1" ];
+if [ -z "$1" ]; then
 	echo "missing ssh host"
 	exit -1
 fi

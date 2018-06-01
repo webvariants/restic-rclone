@@ -9,3 +9,6 @@
 /data/
 /mnt/
 /keys/
+/docker-compose.yml
+/.env*
+/rclone-config

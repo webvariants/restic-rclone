@@ -1,0 +1,82 @@
+#!/bin/bash -e
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+touch "$BASEDIR/rclone-config"
+
+read -p "NAME: " NAME
+if [ -z "$NAME" ]; then
+  echo "required"
+  exit -1
+fi
+
+if [ -e "$BASEDIR/.env-$NAME" ]; then
+  echo ".env file .env-$NAME already exists."
+  exit -1
+fi
+
+read -p "AUTH_USERNAME: " AUTH_USERNAME
+if [ -z "$NAME" ]; then
+  echo "AUTH_USERNAME"
+  exit -1
+fi
+
+read -p "AUTH_PASSWORD (press enter for pwgen): " AUTH_PASSWORD
+if [ -z "$AUTH_PASSWORD" ]; then
+  AUTH_PASSWORD=$(pwgen 40 1)
+fi
+
+read -p "RESTIC_PASSWORD (press enter for pwgen): " RESTIC_PASSWORD
+if [ -z "$RESTIC_PASSWORD" ]; then
+  RESTIC_PASSWORD=$(pwgen 40 1)
+fi
+
+read -p "DOMAIN (ex. host1.backups.example.com): " DOMAIN
+if [ -z "$DOMAIN" ]; then
+  echo "required"
+  exit -1
+fi
+
+read -p "PORT (ex. 8001): " PORT
+if [ -z "$PORT" ]; then
+  echo "required"
+  exit -1
+fi
+
+read -p "SERVE_PARAMS: (ex. remote:backup-bucket/host1/) " SERVE_PARAMS
+if [ -z "$SERVE_PARAMS" ]; then
+  echo "required"
+  exit -1
+fi
+
+
+echo "NAME=$NAME"                       >> "$BASEDIR/.env-$NAME"
+echo "AUTH_USERNAME=$AUTH_USERNAME"     >> "$BASEDIR/.env-$NAME"
+echo "AUTH_PASSWORD=$AUTH_PASSWORD"     >> "$BASEDIR/.env-$NAME"
+echo "RESTIC_PASSWORD=$RESTIC_PASSWORD" >> "$BASEDIR/.env-$NAME"
+echo "DOMAIN=$DOMAIN"                   >> "$BASEDIR/.env-$NAME"
+echo "PORT=$PORT"                       >> "$BASEDIR/.env-$NAME"
+echo "SERVE_PARAMS=$SERVE_PARAMS"       >> "$BASEDIR/.env-$NAME"
+echo "FAST_LIST=1"                      >> "$BASEDIR/.env-$NAME"
+echo "APPEND_ONLY=1"                    >> "$BASEDIR/.env-$NAME"
+
+if [ ! -e "$BASEDIR/docker-compose.yml" ]; then
+  echo "version: '2.3'\nservices:\n" > "$BASEDIR/docker-compose.yml"
+fi
+
+echo                                                                              >> "$BASEDIR/docker-compose.yml"
+echo "  $NAME:"                                                                   >> "$BASEDIR/docker-compose.yml"
+echo "    extends:"                                                               >> "$BASEDIR/docker-compose.yml"
+echo "      file: docker-compose.base.yml"                                        >> "$BASEDIR/docker-compose.yml"
+echo "      service: rclone"                                                      >> "$BASEDIR/docker-compose.yml"
+echo "    env_file: [\"./.env-$NAME\"]"                                           >> "$BASEDIR/docker-compose.yml"
+echo "    ports:"                                                                 >> "$BASEDIR/docker-compose.yml"
+echo "      - 0.0.0.0:${PORT}:8080"                                               >> "$BASEDIR/docker-compose.yml"
+echo "    volumes:"                                                               >> "$BASEDIR/docker-compose.yml"
+echo "      - \"./keys:/keys:ro\""                                                >> "$BASEDIR/docker-compose.yml"
+echo "      - \"./rclone-config:/home/rclone/.config/rclone/rclone.conf\""        >> "$BASEDIR/docker-compose.yml"
+echo                                                                              >> "$BASEDIR/docker-compose.yml"
+
+echo "\n.env-$NAME created, docker-compose.yml updated."
+echo "run docker-compose up -d"
+echo "init repository with ./bin/restic-host $NAME init"

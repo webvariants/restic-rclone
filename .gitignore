@@ -5,4 +5,8 @@
 /.uuid
 /docker-compose.yml
 /bin/restic-*
+!/bin/restic-host
 !/bin/restic-example
+/.env
+/.env-*
+/rclone-config
