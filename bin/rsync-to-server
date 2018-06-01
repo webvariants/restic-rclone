@@ -1,0 +1,39 @@
+#!/bin/bash -e
+
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+
+if [ ! -e ".rsync-exclude" ]; then
+	echo "missing .rsync-exclude"
+	exit -1
+fi
+
+if [ ! -e ".uuid" ]; then
+	echo "missing local .uuid"
+	exit -1
+fi
+
+if [ -z "$1" ];
+	echo "missing ssh host"
+	exit -1
+fi
+
+SSH_HOST="$1"
+
+if [ -z "$2" ]; then
+	SSH_PATH="/docker/rclone/"
+else
+	SSH_PATH="$2"
+fi
+
+SERVER_UUID=$(ssh $SSH_HOST cat ${SSH_PATH}.uuid)
+LOCAL_UUID=$(cat .uuid)
+
+echo "SERVER_UUID: $SERVER_UUID"
+echo "LOCAL_UUID:  $LOCAL_UUID"
+
+if [ "$SERVER_UUID" != "$LOCAL_UUID" ]; then
+	echo "UUIDs do not match. Are you sure that you are deploying to the correct target?"
+	exit -1
+fi
+
+rsync -vaz --delete --progress --exclude-from=.rsync-exclude ./ "$SSH_HOST:$SSH_PATH"

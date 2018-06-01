@@ -1,0 +1,10 @@
+version: '2.3'
+
+services:
+
+  rclone:
+    build: docker
+    environment:
+      - APPEND_ONLY=1
+    volumes:
+      - "./certs:/certs"

@@ -1,0 +1,8 @@
+/certs/
+/data/
+/mnt/
+/keys/
+/.uuid
+/docker-compose.yml
+/bin/restic-*
+!/bin/restic-example

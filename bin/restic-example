@@ -1,0 +1,13 @@
+#!/bin/bash
+
+NAME=#INSERT NAME (SUBDOMAIN) ex. gitlab
+AUTH_USERNAME="$NAME"
+AUTH_PASSWORD=#INSERT HERE AUTH_USERNAME
+export RESTIC_PASSWORD=#INSERT HERE
+PORT=#INSERT PORT
+DOMAIN=#INSERT BASE DOMAN ex. backups.example.com
+
+export RESTIC_REPOSITORY="rest:https://$AUTH_USERNAME:$AUTH_PASSWORD@$NAME.$DOMAIN:$PORT/"
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+restic --cacert "$BASEDIR/certs/ca.crt" --tls-client-cert "$BASEDIR/certs/client-$NAME.pem" "$@"
