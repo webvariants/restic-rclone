@@ -17,8 +17,8 @@ source "$BASEDIR/.env-$1"
 export RESTIC_PASSWORD="$RESTIC_PASSWORD"
 export RESTIC_REPOSITORY="rest:https://$AUTH_USERNAME:$AUTH_PASSWORD@$DOMAIN:$PORT/"
 
-if [ ! -f "$BASEDIR/certs/ca.crt" ]; then
-  echo "missing $BASEDIR/certs/ca.crt\n"
+if [ ! -f "$BASEDIR/certs/ca-$NAME.crt" ]; then
+  echo "missing $BASEDIR/certs/ca-$NAME.crt\n"
   exit -1
 fi
 
@@ -27,4 +27,4 @@ if [ ! -f "$BASEDIR/certs/client-$NAME.pem" ]; then
   exit -1
 fi
 
-restic --cacert "$BASEDIR/certs/ca.crt" --tls-client-cert "$BASEDIR/certs/client-$NAME.pem" "${@:2}"
+restic --cacert "$BASEDIR/certs/ca-$NAME.crt" --tls-client-cert "$BASEDIR/certs/client-$NAME.pem" "${@:2}"
