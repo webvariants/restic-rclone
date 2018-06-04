@@ -4,6 +4,7 @@ services:
 
   rclone:
     build: docker
+    restart: unless-stopped
     environment:
       - APPEND_ONLY=1
     volumes:
