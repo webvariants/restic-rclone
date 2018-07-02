@@ -11,8 +11,13 @@ if [ -z "$NAME" ]; then
   exit -1
 fi
 
-if [ -e "$BASEDIR/.env-$NAME" ]; then
-  echo ".env file .env-$NAME already exists."
+if [ -e "$BASEDIR/.env-$NAME-server" ]; then
+  echo ".env file .env-$NAME-server already exists."
+  exit -1
+fi
+
+if [ -e "$BASEDIR/.env-$NAME-client" ]; then
+  echo ".env file .env-$NAME-client already exists."
   exit -1
 fi
 
@@ -50,18 +55,22 @@ if [ -z "$SERVE_PARAMS" ]; then
   exit -1
 fi
 
+read -p "DOCKER_SERVER_PARAMS (ex. --volume /local/data:/container/data): " DOCKER_SERVER_PARAMS
+
 "$BINDIR/gen-certs-docker" "$BASEDIR/certs" $NAME $DOMAIN
 
-echo "NAME=$NAME"                       >> "$BASEDIR/.env-$NAME"
-echo "AUTH_USERNAME=$AUTH_USERNAME"     >> "$BASEDIR/.env-$NAME"
-echo "AUTH_PASSWORD=$AUTH_PASSWORD"     >> "$BASEDIR/.env-$NAME"
-echo "RESTIC_PASSWORD=$RESTIC_PASSWORD" >> "$BASEDIR/.env-$NAME"
-echo "DOMAIN=$DOMAIN"                   >> "$BASEDIR/.env-$NAME"
-echo "PORT=$PORT"                       >> "$BASEDIR/.env-$NAME"
-echo "SERVE_PARAMS=$SERVE_PARAMS"       >> "$BASEDIR/.env-$NAME"
-echo "FAST_LIST=1"                      >> "$BASEDIR/.env-$NAME"
-echo "APPEND_ONLY=1"                    >> "$BASEDIR/.env-$NAME"
+echo "NAME=$NAME"                                       >> "$BASEDIR/.env-$NAME-server"
+echo "AUTH_USERNAME=$AUTH_USERNAME"                     >> "$BASEDIR/.env-$NAME-server"
+echo "AUTH_PASSWORD=$AUTH_PASSWORD"                     >> "$BASEDIR/.env-$NAME-server"
+echo "DOMAIN=$DOMAIN"                                   >> "$BASEDIR/.env-$NAME-server"
+echo "PORT=$PORT"                                       >> "$BASEDIR/.env-$NAME-server"
+cp "$BASEDIR/.env-$NAME-server" "$BASEDIR/.env-$NAME-client"
+echo "SERVE_PARAMS=$SERVE_PARAMS"                       >> "$BASEDIR/.env-$NAME-server"
+echo "DOCKER_SERVER_PARAMS=\"$DOCKER_SERVER_PARAMS\""   >> "$BASEDIR/.env-$NAME-server"
+echo "FAST_LIST=1"                                      >> "$BASEDIR/.env-$NAME-server"
+echo "APPEND_ONLY=1"                                    >> "$BASEDIR/.env-$NAME-server"
+echo "RESTIC_PASSWORD=$RESTIC_PASSWORD"                 >> "$BASEDIR/.env-$NAME-client"
 
-echo "\n.env-$NAME created."
-echo "run server with ./bin/restic-host-server $NAME"
-echo "init repository with ./bin/restic-host $NAME init"
+echo ".env-$NAME-server and .env-$NAME-client created."
+echo "run server with ./bin/restic-server $NAME"
+echo "init repository with ./bin/restic-client $NAME init"

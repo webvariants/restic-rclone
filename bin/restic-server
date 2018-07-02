@@ -15,12 +15,12 @@ if [ ! -z "$2" ]; then
   fi
 fi
 
-if [ ! -f "$BASEDIR/.env-$1" ]; then
-  echo -e ".env file $BASEDIR/.env-$1 not found"
+if [ ! -f "$BASEDIR/.env-$1-server" ]; then
+  echo -e ".env file $BASEDIR/.env-$1-server not found"
   exit -1
 fi
 
-source "$BASEDIR/.env-$1"
+source "$BASEDIR/.env-$1-server"
 
 if [ -z "$NAME" ]; then
   echo "missing NAME in env"
@@ -61,7 +61,8 @@ docker run -d \
   --name $CONTAINER \
   --restart=unless-stopped \
   --publish $PORT:8080 \
-  --env-file "$BASEDIR/.env-$1" \
+  --env-file "$BASEDIR/.env-$1-server" \
   --volume "$BASEDIR/certs:/certs" \
+  $DOCKER_SERVER_PARAMS \
   $EXTRA_PARAMS \
   restic-server

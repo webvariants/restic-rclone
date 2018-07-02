@@ -5,8 +5,8 @@
 /.uuid
 /docker-compose.yml
 /bin/restic-*
-!/bin/restic-host
-!/bin/restic-host-server
+!/bin/restic-client
+!/bin/restic-server
 !/bin/restic-example
 /.env
 /.env-*

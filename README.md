@@ -8,7 +8,7 @@
 ./bin/build-image
 
 # create certs directory with right permissions
-./bin/fix-permission
+./bin/create-certs-dir
 
 # create configuration for host
 ./bin/add-host
@@ -18,15 +18,15 @@
 NAME=... # use name from interactive steps
 
 # run server
-./bin/restic-host-server $NAME
+./bin/restic-server $NAME
 
 # follow https://restic.net/#installation
 
 # init repository
-./bin/restic-host $NAME init
+./bin/restic-client $NAME init
 
 # copy needed files to client (host with files to backup)
-./bin/tar-host-client $NAME
+./bin/tar-client $NAME
 scp $NAME.tar.gz YOUR-HOST:
 ssh YOUR-HOST
 tar xzvf $NAME.tar.gz
@@ -34,5 +34,5 @@ tar xzvf $NAME.tar.gz
 # follow https://restic.net/#installation
 
 # test connection
-./bin/restic-host $NAME snapshots
+./bin/restic-client $NAME snapshots
 ```

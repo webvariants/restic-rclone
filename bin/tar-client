@@ -7,8 +7,8 @@ if [ -z "$1" ]; then
   exit -1
 fi
 
-if [ ! -f "$BASEDIR/.env-$1" ]; then
-  echo ".env file $BASEDIR/.env-$1 not found"
+if [ ! -f "$BASEDIR/.env-$1-client" ]; then
+  echo ".env file $BASEDIR/.env-$1-client not found"
   exit -1
 fi
 
@@ -19,4 +19,4 @@ if [ -e "$1.tar.gz" ]; then
   exit -1
 fi
 
-tar czvf "$1.tar.gz" ./bin/restic-host "./.env-$1" "./certs/ca-$1.crt" "./certs/client-$1.pem"
+tar czvf "$1.tar.gz" ./bin/restic-client "./.env-$1-client" "./certs/ca-$1.crt" "./certs/client-$1.pem"
