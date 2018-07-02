@@ -12,3 +12,4 @@
 /docker-compose.yml
 /.env*
 /rclone-config
+/*.tar.gz

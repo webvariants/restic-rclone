@@ -3,12 +3,12 @@
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
 
 if [ -z "$1" ]; then
-  echo "missing name as first parameter\n"
+  echo "missing name as first parameter"
   exit -1
 fi
 
 if [ ! -f "$BASEDIR/.env-$1" ]; then
-  echo ".env file $BASEDIR/.env-$1 not found\n"
+  echo ".env file $BASEDIR/.env-$1 not found"
   exit -1
 fi
 

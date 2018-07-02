@@ -11,3 +11,4 @@
 /.env
 /.env-*
 /rclone-config
+/*.tar.gz
