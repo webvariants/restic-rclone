@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+docker build --tag restic-server --force-rm --pull "$BASEDIR/docker"

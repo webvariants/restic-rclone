@@ -1,0 +1,67 @@
+#!/bin/bash -e
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+if [ -z "$1" ]; then
+  echo "missing name as first parameter"
+  exit -1
+fi
+
+if [ ! -z "$2" ]; then
+  if [ "$2" != "stop" ]; then
+    echo "invalid option"
+    echo "possible options: stop"
+    exit -1
+  fi
+fi
+
+if [ ! -f "$BASEDIR/.env-$1" ]; then
+  echo -e ".env file $BASEDIR/.env-$1 not found"
+  exit -1
+fi
+
+source "$BASEDIR/.env-$1"
+
+if [ -z "$NAME" ]; then
+  echo "missing NAME in env"
+  exit -1
+fi
+
+if [ -z "$PORT" ]; then
+  echo "missing PORT in env"
+  exit -1
+fi
+
+EXTRA_PARAMS=
+if [ -f "$BASEDIR/rclone-config" ]; then
+  EXTRA_PARAMS="$EXTRA_PARAMS --volume $BASEDIR/rclone-config:/home/rclone/.config/rclone/rclone.conf"
+fi
+if [ -d "$BASEDIR/keys" ]; then
+  EXTRA_PARAMS="$EXTRA_PARAMS --volume $BASEDIR/keys:/keys:ro"
+fi
+
+CONTAINER="restic-host-$NAME"
+
+if [ -n "$(docker inspect --format="{{ .State.Running }}" $CONTAINER 2> /dev/null)" ]; then
+  if [ "$(docker inspect --format="{{ .State.Running }}" $CONTAINER 2> /dev/null)" == "true" ]; then
+		echo "Stopping container (5s timeout) ..."
+		docker stop -t 5 $CONTAINER > /dev/null
+	fi
+  echo "Removing container ..."
+  docker rm $CONTAINER > /dev/null
+fi
+
+if [ "$2" = "stop" ]; then
+  exit
+fi
+
+echo "Starting container ..."
+
+docker run -d \
+  --name $CONTAINER \
+  --restart=unless-stopped \
+  --publish $PORT:8080 \
+  --env-file "$BASEDIR/.env-$1" \
+  --volume "$BASEDIR/certs:/certs" \
+  $EXTRA_PARAMS \
+  restic-server

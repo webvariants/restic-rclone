@@ -18,12 +18,12 @@ export RESTIC_PASSWORD="$RESTIC_PASSWORD"
 export RESTIC_REPOSITORY="rest:https://$AUTH_USERNAME:$AUTH_PASSWORD@$DOMAIN:$PORT/"
 
 if [ ! -f "$BASEDIR/certs/ca-$NAME.crt" ]; then
-  echo "missing $BASEDIR/certs/ca-$NAME.crt\n"
+  echo "missing $BASEDIR/certs/ca-$NAME.crt"
   exit -1
 fi
 
 if [ ! -f "$BASEDIR/certs/client-$NAME.pem" ]; then
-  echo "missing $BASEDIR/certs/client-$NAME.pem\n"
+  echo "missing $BASEDIR/certs/client-$NAME.pem"
   exit -1
 fi
 

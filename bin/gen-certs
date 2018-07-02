@@ -1,0 +1,50 @@
+#!/bin/bash -e
+
+DIR=$1
+NAME=$2
+DOMAIN=$3
+
+if [ -z "$DIR" ]; then
+  echo "Missing DIR"
+  exit -1
+fi
+if [ ! -d "$DIR" ]; then
+  echo "$DIR is not an directory"
+  exit -1
+fi
+DIR=$(realpath "$DIR")
+
+if [ -z "$NAME" ]; then
+  echo "Missing NAME"
+  exit -1
+fi
+
+if [ -z "${DOMAIN}" ]; then
+  DOMAIN="localhost"
+fi
+
+if [ ! -f "$DIR/ca-$NAME.crt" ] && [ ! -f "$DIR/ca-$NAME.key" ]; then
+  openssl req -days 3650 -nodes -x509 -newkey rsa:4096 -keyout $DIR/ca-$NAME.key -out $DIR/ca-$NAME.crt -subj "/C=DE/ST=SA/L=MD/O=rclone/OU=root/CN=ca/emailAddress=rclone@example.com"
+fi
+
+if [ ! -f "$DIR/server-$NAME.key" ] && [ ! -f "$DIR/server-$NAME.crt" ] && [ ! -f "$DIR/server-$NAME.pem" ]; then
+  if [ ! -f "$DIR/ca-$NAME.srl" ]; then
+    SRL="-CAcreateserial -CAserial $DIR/ca-$NAME.srl"
+  else
+    SRL="-CAserial $DIR/ca-$NAME.srl"
+  fi
+  openssl req -days 3650 -nodes -newkey rsa:4096 -keyout $DIR/server-$NAME.key -out $DIR/server-$NAME.csr -subj "/C=DE/ST=SA/L=MD/O=rclone/OU=server/CN=${DOMAIN}/emailAddress=rclone@example.com"
+  openssl x509 -req -in $DIR/server-$NAME.csr -CA $DIR/ca-$NAME.crt -CAkey $DIR/ca-$NAME.key $SRL -out $DIR/server-$NAME.crt
+  cat $DIR/server-$NAME.crt $DIR/ca-$NAME.crt > $DIR/server-$NAME.pem
+fi
+
+if [ ! -f "$DIR/client-$NAME.key" ] && [ ! -f "$DIR/client-$NAME.crt" ] && [ ! -f "$DIR/client-$NAME.pem" ]; then
+  if [ ! -f "$DIR/ca-$NAME.srl" ]; then
+    SRL="-CAcreateserial -CAserial $DIR/ca-$NAME.srl"
+  else
+    SRL="-CAserial $DIR/ca-$NAME.srl"
+  fi
+  openssl req -days 3650 -nodes -newkey rsa:4096 -keyout $DIR/client-$NAME.key -out $DIR/client-$NAME.csr -subj "/C=DE/ST=NSW/L=MD/O=rclone/OU=client/CN=client-$NAME/emailAddress=rclone@example.com"
+  openssl x509 -req -in $DIR/client-$NAME.csr -CA $DIR/ca-$NAME.crt -CAkey $DIR/ca-$NAME.key $SRL -out $DIR/client-$NAME.crt
+  cat $DIR/client-$NAME.key $DIR/client-$NAME.crt > $DIR/client-$NAME.pem
+fi

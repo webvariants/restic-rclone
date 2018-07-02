@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+DIR=$1
+
+if [ -z "$DIR" ]; then
+  echo "Missing DIR"
+  exit -1
+fi
+if [ ! -d "$DIR" ]; then
+  echo "$DIR is not an directory"
+  exit -1
+fi
+DIR=$(realpath "$DIR")
+
+BINDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
+
+docker run --rm --volume "$BINDIR/gen-certs:/usr/local/bin/gen-certs:ro" --volume "$DIR:$DIR" restic-server gen-certs $DIR $2 $3

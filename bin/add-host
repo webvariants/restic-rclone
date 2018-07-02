@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+BINDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
 
 touch "$BASEDIR/rclone-config"
 
@@ -43,12 +44,13 @@ if [ -z "$PORT" ]; then
   exit -1
 fi
 
-read -p "SERVE_PARAMS: (ex. remote:backup-bucket/host1/) " SERVE_PARAMS
+read -p "SERVE_PARAMS (ex. remote:backup-bucket/host1/): " SERVE_PARAMS
 if [ -z "$SERVE_PARAMS" ]; then
   echo "required"
   exit -1
 fi
 
+"$BINDIR/gen-certs-docker" "$BASEDIR/certs" $NAME $DOMAIN
 
 echo "NAME=$NAME"                       >> "$BASEDIR/.env-$NAME"
 echo "AUTH_USERNAME=$AUTH_USERNAME"     >> "$BASEDIR/.env-$NAME"
