@@ -62,23 +62,6 @@ echo "SERVE_PARAMS=$SERVE_PARAMS"       >> "$BASEDIR/.env-$NAME"
 echo "FAST_LIST=1"                      >> "$BASEDIR/.env-$NAME"
 echo "APPEND_ONLY=1"                    >> "$BASEDIR/.env-$NAME"
 
-if [ ! -e "$BASEDIR/docker-compose.yml" ]; then
-  echo "version: '2.3'\nservices:\n" > "$BASEDIR/docker-compose.yml"
-fi
-
-echo                                                                              >> "$BASEDIR/docker-compose.yml"
-echo "  $NAME:"                                                                   >> "$BASEDIR/docker-compose.yml"
-echo "    extends:"                                                               >> "$BASEDIR/docker-compose.yml"
-echo "      file: docker-compose.base.yml"                                        >> "$BASEDIR/docker-compose.yml"
-echo "      service: rclone"                                                      >> "$BASEDIR/docker-compose.yml"
-echo "    env_file: [\"./.env-$NAME\"]"                                           >> "$BASEDIR/docker-compose.yml"
-echo "    ports:"                                                                 >> "$BASEDIR/docker-compose.yml"
-echo "      - 0.0.0.0:${PORT}:8080"                                               >> "$BASEDIR/docker-compose.yml"
-echo "    volumes:"                                                               >> "$BASEDIR/docker-compose.yml"
-echo "      - \"./keys:/keys:ro\""                                                >> "$BASEDIR/docker-compose.yml"
-echo "      - \"./rclone-config:/home/rclone/.config/rclone/rclone.conf\""        >> "$BASEDIR/docker-compose.yml"
-echo                                                                              >> "$BASEDIR/docker-compose.yml"
-
-echo "\n.env-$NAME created, docker-compose.yml updated."
-echo "run docker-compose up -d"
+echo "\n.env-$NAME created."
+echo "run server with ./bin/restic-host-server $NAME"
 echo "init repository with ./bin/restic-host $NAME init"
