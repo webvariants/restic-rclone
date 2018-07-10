@@ -11,5 +11,6 @@
 /keys/
 /docker-compose.yml
 /.env*
+/.htpasswd*
 /rclone-config
 /*.tar.gz

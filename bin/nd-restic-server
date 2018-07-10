@@ -1,0 +1,73 @@
+#!/bin/bash -e
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+if [ -z "$1" ]; then
+  echo "missing name as first parameter"
+  exit -1
+fi
+
+if [ ! -z "$2" ]; then
+  if [ "$2" != "stop" ]; then
+    echo "invalid option"
+    echo "possible options: stop"
+    exit -1
+  fi
+fi
+
+if [ ! -f "$BASEDIR/.env-$1-server" ]; then
+  echo -e ".env file $BASEDIR/.env-$1-server not found"
+  exit -1
+fi
+
+source "$BASEDIR/.env-$1-server"
+
+if [ -z "$NAME" ]; then
+  echo "missing NAME in env"
+  exit -1
+fi
+
+if [ -z "$PORT" ]; then
+  echo "missing PORT in env"
+  exit -1
+fi
+
+#
+
+if [ -z "${AUTH_USERNAME}" ]; then
+  echo "Missing AUTH_USERNAME"
+  exit -1
+fi
+
+if [ -z "${AUTH_PASSWORD}" ]; then
+  echo "Missing AUTH_PASSWORD"
+  exit -1
+fi
+
+if [ -z "$NAME" ]; then
+  echo "Missing NAME"
+  exit -1
+fi
+
+if [ -z "${AUTH_TITLE}" ]; then
+  export AUTH_TITLE="Protected rclone service"
+fi
+
+if [ ! -z "$APPEND_ONLY" ]; then
+  APPEND_ONLY_PARAM="--append-only"
+fi
+
+if [ ! -z "$FAST_LIST" ]; then
+  FAST_LIST_PARAM="--fast-list"
+fi
+
+PASSWORD_FILE="$BASEDIR/.htpasswd-$1"
+rm -rf ${PASSWORD_FILE}
+htpasswd -b -c ${PASSWORD_FILE} ${AUTH_USERNAME} ${AUTH_PASSWORD}
+
+echo rclone serve restic $FAST_LIST_PARAM $APPEND_ONLY_PARAM "$SERVE_PARAMS"
+rclone serve restic --addr 0.0.0.0:$PORT --htpasswd ${PASSWORD_FILE} \
+  --cert "$BASEDIR/certs/server-$NAME.pem" \
+  --key "$BASEDIR/certs/server-$NAME.key" \
+  --client-ca "$BASEDIR/certs/ca-$NAME.crt" \
+  $FAST_LIST_PARAM $APPEND_ONLY_PARAM "$SERVE_PARAMS"
