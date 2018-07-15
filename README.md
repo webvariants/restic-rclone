@@ -17,6 +17,9 @@
 
 NAME=... # use name from interactive steps
 
+# rclone config to setup storage system (https://rclone.org/overview/)
+./bin/rclone-config $NAME
+
 # run server
 ./bin/restic-server $NAME
 

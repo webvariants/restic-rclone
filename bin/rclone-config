@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+if [ -z "$1" ]; then
+  echo "missing name as first parameter"
+  exit -1
+fi
+
+source "$BASEDIR/.env-$1-server"
+
+if [ -z "$NAME" ]; then
+  echo "missing NAME in env"
+  exit -1
+fi
+
+touch "$BASEDIR/.rclone-$1"
+
+docker run --rm -ti \
+  --env-file "$BASEDIR/.env-$1-server" \
+  --volume "$BASEDIR:/home/rclone/.config/rclone" \
+  restic-server rclone --config "/home/rclone/.config/rclone/.rclone-$1" config

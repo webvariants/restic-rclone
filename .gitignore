@@ -10,6 +10,7 @@
 !/bin/restic-example
 /.env
 /.env-*
+/.rclone-*
 /.htpasswd-*
 /rclone-config
 /*.tar.gz
