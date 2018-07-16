@@ -35,5 +35,5 @@ PASSWORD_FILE=/home/rclone/htpasswd
 rm -rf ${PASSWORD_FILE}
 htpasswd -b -c ${PASSWORD_FILE} ${AUTH_USERNAME} ${AUTH_PASSWORD}
 
-echo rclone serve restic $FAST_LIST_PARAM $APPEND_ONLY_PARAM "$SERVE_PARAMS"
-rclone serve restic --addr 0.0.0.0:8080 --htpasswd ${PASSWORD_FILE} --cert /certs/server-$NAME.pem --key /certs/server-$NAME.key --client-ca /certs/ca-$NAME.crt $FAST_LIST_PARAM $APPEND_ONLY_PARAM "$SERVE_PARAMS"
+echo rclone serve restic $FAST_LIST_PARAM $APPEND_ONLY_PARAM $SERVE_PARAMS
+rclone serve restic --addr 0.0.0.0:8080 --htpasswd ${PASSWORD_FILE} --cert /certs/server-$NAME.pem --key /certs/server-$NAME.key --client-ca /certs/ca-$NAME.crt $FAST_LIST_PARAM $APPEND_ONLY_PARAM $SERVE_PARAMS
