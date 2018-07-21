@@ -1,0 +1,34 @@
+#!/bin/bash
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+if [ -z "$1" ]; then
+  echo "missing name as first parameter"
+  exit -1
+fi
+
+if [ ! -f "$BASEDIR/.env-$1-client" ]; then
+  echo ".env file $BASEDIR/.env-$1-client not found"
+  exit -1
+fi
+
+source "$BASEDIR/.env-$1-client"
+
+if [ -z "$NAME" ]; then
+  echo "missing NAME in .env-$1-client"
+  exit -1
+fi
+
+cat > "$BASEDIR/restic-$NAME.cmd" <<EOL
+set AUTH_USERNAME=$AUTH_USERNAME
+set AUTH_PASSWORD=$AUTH_PASSWORD
+set DOMAIN=$DOMAIN
+set PORT=$PORT
+set RESTIC_PASSWORD=$RESTIC_PASSWORD
+set RESTIC_REPOSITORY=rest:https://%AUTH_USERNAME%:%AUTH_PASSWORD%@%DOMAIN%:%PORT%/
+SET BINPATH=%~dp0
+restic --cacert "%BINPATH%certs/ca-$NAME.crt" --tls-client-cert "%BINPATH%certs/client-$NAME.pem" %*
+EOL
+
+echo "Wrote windows client helper to restic-$NAME.cmd."
+echo "It includes the env variables, you only need the certs to use it."

@@ -12,5 +12,6 @@
 /.env-*
 /.rclone-*
 /.htpasswd-*
+/restic-*.cmd
 /rclone-config
 /*.tar.gz
