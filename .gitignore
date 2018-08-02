@@ -15,3 +15,4 @@
 /restic-*.cmd
 /rclone-config
 /*.tar.gz
+/restic-client-*

@@ -2,34 +2,47 @@
 
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
 
-if [ -z "$1" ]; then
-  echo "missing name as first parameter"
-  exit -1
-fi
+if [ -z "$SKIP_ENV" ]; then
+  if [ -z "$1" ]; then
+    echo "missing name as first parameter"
+    exit -1
+  fi
 
-if [ ! -f "$BASEDIR/.env-$1-client" ]; then
-  echo ".env file $BASEDIR/.env-$1-client not found"
-  exit -1
-fi
+  if [ ! -f "$BASEDIR/.env-$1-client" ]; then
+    echo ".env file $BASEDIR/.env-$1-client not found"
+    exit -1
+  fi
 
-source "$BASEDIR/.env-$1-client"
+  source "$BASEDIR/.env-$1-client"
 
-if [ -z "$NAME" ]; then
-  echo "missing NAME in .env-$1-client"
-  exit -1
+  if [ -z "$NAME" ]; then
+    echo "missing NAME in .env-$1-client"
+    exit -1
+  fi
+
+  PARAMS="${@:2}"
+else
+  PARAMS="$@"
 fi
 
 export RESTIC_PASSWORD="$RESTIC_PASSWORD"
 export RESTIC_REPOSITORY="rest:https://$AUTH_USERNAME:$AUTH_PASSWORD@$DOMAIN:$PORT/"
 
-if [ ! -f "$BASEDIR/certs/ca-$NAME.crt" ]; then
-  echo "missing $BASEDIR/certs/ca-$NAME.crt"
+if [ -z "$CA_FILE" ]; then
+  CA_FILE="$BASEDIR/certs/ca-$NAME.crt"
+fi
+if [ -z "$TLS_FILE" ]; then
+  TLS_FILE="$BASEDIR/certs/client-$NAME.pem"
+fi
+
+if [ ! -f "$CA_FILE" ]; then
+  echo "missing $CA_FILE"
+  exit -1
+fi
+if [ ! -f "$TLS_FILE" ]; then
+  echo "missing $TLS_FILE"
   exit -1
 fi
 
-if [ ! -f "$BASEDIR/certs/client-$NAME.pem" ]; then
-  echo "missing $BASEDIR/certs/client-$NAME.pem"
-  exit -1
-fi
 
-restic --cacert "$BASEDIR/certs/ca-$NAME.crt" --tls-client-cert "$BASEDIR/certs/client-$NAME.pem" "${@:2}"
+restic --cacert "$CA_FILE" --tls-client-cert "$TLS_FILE" "$PARAMS"
