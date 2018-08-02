@@ -45,4 +45,4 @@ if [ ! -f "$TLS_FILE" ]; then
 fi
 
 
-restic --cacert "$CA_FILE" --tls-client-cert "$TLS_FILE" "$PARAMS"
+restic --cacert "$CA_FILE" --tls-client-cert "$TLS_FILE" $PARAMS
