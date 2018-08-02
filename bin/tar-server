@@ -13,11 +13,16 @@ if [ ! -f "$BASEDIR/.env-$1-client" ]; then
   exit -1
 fi
 
-cd "$BASEDIR"
-
-if [ -e "$1-client.tar.gz" ]; then
-  echo "$1-client.tar.gz already exists."
+if [ ! -f "$BASEDIR/.env-$1-server" ]; then
+  echo ".env file $BASEDIR/.env-$1-server not found"
   exit -1
 fi
 
-tar czvf "$1-client.tar.gz" ./bin/restic-client "./.env-$1-client" "./certs/ca-$1.crt" "./certs/client-$1.pem"
+cd "$BASEDIR"
+
+if [ -e "$1-all.tar.gz" ]; then
+  echo "$1-all.tar.gz already exists."
+  exit -1
+fi
+
+tar czvf "$1-all.tar.gz" ./bin/restic-client ./bin/nd-restic-server "./.env-$1-server" ./certs/ca-"$1".* ./certs/server-"$1".*

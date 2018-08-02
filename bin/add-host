@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
 BINDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
@@ -57,8 +58,6 @@ fi
 
 read -p "DOCKER_SERVER_PARAMS (ex. --volume /local/data:/container/data): " DOCKER_SERVER_PARAMS
 
-"$BINDIR/gen-certs-docker" "$BASEDIR/certs" $NAME $DOMAIN
-
 echo "NAME=$NAME"                                       >> "$BASEDIR/.env-$NAME-server"
 echo "AUTH_USERNAME=$AUTH_USERNAME"                     >> "$BASEDIR/.env-$NAME-server"
 echo "AUTH_PASSWORD=$AUTH_PASSWORD"                     >> "$BASEDIR/.env-$NAME-server"
@@ -70,6 +69,8 @@ echo "DOCKER_SERVER_PARAMS=\"$DOCKER_SERVER_PARAMS\""   >> "$BASEDIR/.env-$NAME-
 echo "FAST_LIST=1"                                      >> "$BASEDIR/.env-$NAME-server"
 echo "APPEND_ONLY=1"                                    >> "$BASEDIR/.env-$NAME-server"
 echo "RESTIC_PASSWORD=$RESTIC_PASSWORD"                 >> "$BASEDIR/.env-$NAME-client"
+
+"$BINDIR/gen-certs-docker" "$BASEDIR/certs" $NAME $DOMAIN
 
 echo ".env-$NAME-server and .env-$NAME-client created."
 echo "run server with ./bin/restic-server $NAME"

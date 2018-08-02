@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 DIR=$1
 NAME=$2
@@ -20,7 +21,8 @@ if [ -z "$NAME" ]; then
 fi
 
 if [ -z "${DOMAIN}" ]; then
-  DOMAIN="localhost"
+  echo "Missing DOMAIN"
+  exit -1
 fi
 
 if [ ! -f "$DIR/ca-$NAME.crt" ] && [ ! -f "$DIR/ca-$NAME.key" ]; then

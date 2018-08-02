@@ -27,9 +27,9 @@ NAME=... # use name from interactive steps
 
 # copy needed files to client (host with files to backup)
 ./bin/tar-client $NAME
-scp $NAME.tar.gz YOUR-HOST:
+scp $NAME-client.tar.gz YOUR-HOST:
 ssh YOUR-HOST
-tar xzvf $NAME.tar.gz
+tar xzvf $NAME-client.tar.gz
 
 # follow https://restic.net/#installation
 

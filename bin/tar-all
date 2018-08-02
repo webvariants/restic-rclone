@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+
+BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
+
+if [ -z "$1" ]; then
+  echo "missing name as first parameter"
+  exit -1
+fi
+
+if [ ! -f "$BASEDIR/.env-$1-client" ]; then
+  echo ".env file $BASEDIR/.env-$1-client not found"
+  exit -1
+fi
+
+if [ ! -f "$BASEDIR/.env-$1-server" ]; then
+  echo ".env file $BASEDIR/.env-$1-server not found"
+  exit -1
+fi
+
+cd "$BASEDIR"
+
+if [ -e "$1-all.tar.gz" ]; then
+  echo "$1-all.tar.gz already exists."
+  exit -1
+fi
+
+tar czvf "$1-all.tar.gz" ./bin/restic-client ./bin/nd-restic-server "./.env-$1-client" "./.env-$1-server" ./certs/ca-"$1".* ./certs/client-"$1".* ./certs/server-"$1".*
