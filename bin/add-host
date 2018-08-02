@@ -30,12 +30,20 @@ fi
 
 read -p "AUTH_PASSWORD (press enter for pwgen): " AUTH_PASSWORD
 if [ -z "$AUTH_PASSWORD" ]; then
-  AUTH_PASSWORD=$(pwgen 40 1)
+  if command -v pwgen > /dev/null ; then
+    AUTH_PASSWORD=$(pwgen 40 1)
+  else
+    AUTH_PASSWORD=$(openssl rand -base64 50 | tr -cd '[:alnum:]' | fold -w40 | head -n 1)
+  fi
 fi
 
 read -p "RESTIC_PASSWORD (press enter for pwgen): " RESTIC_PASSWORD
 if [ -z "$RESTIC_PASSWORD" ]; then
-  RESTIC_PASSWORD=$(pwgen 40 1)
+  if command -v pwgen > /dev/null ; then
+    RESTIC_PASSWORD=$(pwgen 40 1)
+  else
+    RESTIC_PASSWORD=$(openssl rand -base64 50 | tr -cd '[:alnum:]' | fold -w40 | head -n 1)
+  fi
 fi
 
 read -p "DOMAIN (ex. host1.backups.example.com): " DOMAIN
@@ -70,7 +78,11 @@ echo "FAST_LIST=1"                                      >> "$BASEDIR/.env-$NAME-
 echo "APPEND_ONLY=1"                                    >> "$BASEDIR/.env-$NAME-server"
 echo "RESTIC_PASSWORD=$RESTIC_PASSWORD"                 >> "$BASEDIR/.env-$NAME-client"
 
-"$BINDIR/gen-certs-docker" "$BASEDIR/certs" $NAME $DOMAIN
+if command -v docker > /dev/null ; then
+  "$BINDIR/gen-certs-docker" "$BASEDIR/certs" $NAME $DOMAIN
+else
+  "$BINDIR/gen-certs" "$BASEDIR/certs" $NAME $DOMAIN
+fi
 
 echo ".env-$NAME-server and .env-$NAME-client created."
 echo "run server with ./bin/restic-server $NAME"

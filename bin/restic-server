@@ -3,6 +3,10 @@ set -e
 
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
 
+if ! command -v docker > /dev/null ; then
+  exec "$BASEDIR/bin/nd-restic-server" $1
+fi
+
 if [ -z "$1" ]; then
   echo "missing name as first parameter"
   exit -1

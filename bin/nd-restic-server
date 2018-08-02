@@ -64,7 +64,11 @@ fi
 
 PASSWORD_FILE="$BASEDIR/.htpasswd-$1"
 rm -rf ${PASSWORD_FILE}
-htpasswd -b -c ${PASSWORD_FILE} ${AUTH_USERNAME} ${AUTH_PASSWORD}
+if command -v htpasswd > /dev/null ; then
+  htpasswd -b -c ${PASSWORD_FILE} ${AUTH_USERNAME} ${AUTH_PASSWORD}
+else
+  echo "${AUTH_USERNAME}:$(openssl passwd -apr1 ${AUTH_PASSWORD})" > ${PASSWORD_FILE}
+fi
 
 echo rclone serve restic $FAST_LIST_PARAM $APPEND_ONLY_PARAM "$SERVE_PARAMS"
 rclone serve restic --addr 0.0.0.0:$PORT --htpasswd ${PASSWORD_FILE} \

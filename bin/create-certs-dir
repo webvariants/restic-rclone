@@ -3,4 +3,4 @@
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
 
 mkdir -p "$BASEDIR/certs"
-chown 1000.1000 "$BASEDIR/certs"
+chown 1000:1000 "$BASEDIR/certs"
