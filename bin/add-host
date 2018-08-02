@@ -64,7 +64,7 @@ echo "AUTH_PASSWORD=$AUTH_PASSWORD"                     >> "$BASEDIR/.env-$NAME-
 echo "DOMAIN=$DOMAIN"                                   >> "$BASEDIR/.env-$NAME-server"
 echo "PORT=$PORT"                                       >> "$BASEDIR/.env-$NAME-server"
 cp "$BASEDIR/.env-$NAME-server" "$BASEDIR/.env-$NAME-client"
-echo "SERVE_PARAMS=$SERVE_PARAMS"                       >> "$BASEDIR/.env-$NAME-server"
+echo "SERVE_PARAMS=\"$SERVE_PARAMS\""                   >> "$BASEDIR/.env-$NAME-server"
 echo "DOCKER_SERVER_PARAMS=\"$DOCKER_SERVER_PARAMS\""   >> "$BASEDIR/.env-$NAME-server"
 echo "FAST_LIST=1"                                      >> "$BASEDIR/.env-$NAME-server"
 echo "APPEND_ONLY=1"                                    >> "$BASEDIR/.env-$NAME-server"
