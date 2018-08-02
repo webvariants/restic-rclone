@@ -32,12 +32,12 @@ echo "" >> "$TARGET"
 
 cat "$BASEDIR/.env-$1-client" >> "$TARGET"
 
-echo "CA_FILE=$(mktemp)" >> "$TARGET"
+echo "CA_FILE=\$(mktemp)" >> "$TARGET"
 echo "cat << 'EOF' > \"\$CA_FILE\"" >> "$TARGET"
 cat "$BASEDIR/certs/ca-$1.crt" >> "$TARGET"
 echo "EOF" >> "$TARGET"
 
-echo "TLS_FILE=$(mktemp)" >> "$TARGET"
+echo "TLS_FILE=\$(mktemp)" >> "$TARGET"
 echo "cat << 'EOF' > \"\$TLS_FILE\"" >> "$TARGET"
 cat "$BASEDIR/certs/client-$1.pem" >> "$TARGET"
 echo "EOF" >> "$TARGET"
