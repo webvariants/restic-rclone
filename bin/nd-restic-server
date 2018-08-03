@@ -33,8 +33,6 @@ if [ -z "$PORT" ]; then
   exit -1
 fi
 
-#
-
 if [ -z "${AUTH_USERNAME}" ]; then
   echo "Missing AUTH_USERNAME"
   exit -1
@@ -71,7 +69,7 @@ else
 fi
 
 echo rclone serve restic $FAST_LIST_PARAM $APPEND_ONLY_PARAM "$SERVE_PARAMS"
-rclone serve restic --addr 0.0.0.0:$PORT --htpasswd ${PASSWORD_FILE} \
+exec rclone serve restic --addr 0.0.0.0:$PORT --htpasswd ${PASSWORD_FILE} \
   --cert "$BASEDIR/certs/server-$NAME.pem" \
   --key "$BASEDIR/certs/server-$NAME.key" \
   --client-ca "$BASEDIR/certs/ca-$NAME.crt" \
