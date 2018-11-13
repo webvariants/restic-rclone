@@ -7,7 +7,7 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     apt-get -q update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -q -y curl apache2-utils openssl unzip
 
-ENV RCLONE_VERSION=1.42
+ENV RCLONE_VERSION=1.44
 
 RUN curl https://downloads.rclone.org/v${RCLONE_VERSION}/rclone-v${RCLONE_VERSION}-linux-amd64.zip -o /rclone.zip && \
     mkdir /rclone && \
