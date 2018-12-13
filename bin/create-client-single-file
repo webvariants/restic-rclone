@@ -33,19 +33,22 @@ echo "" >> "$TARGET"
 cat "$BASEDIR/.env-$1-client" >> "$TARGET"
 
 echo "CA_FILE=\$(mktemp)" >> "$TARGET"
+echo "TLS_FILE=\$(mktemp)" >> "$TARGET"
+echo "function finish {" >> "$TARGET"
+echo "  rm -f \"\$CA_FILE\"" >> "$TARGET"
+echo "  rm -f \"\$TLS_FILE\"" >> "$TARGET"
+echo "}" >> "$TARGET"
+echo "trap finish EXIT" >> "$TARGET"
+
 echo "cat << 'EOF' > \"\$CA_FILE\"" >> "$TARGET"
 cat "$BASEDIR/certs/ca-$1.crt" >> "$TARGET"
 echo "EOF" >> "$TARGET"
 
-echo "TLS_FILE=\$(mktemp)" >> "$TARGET"
 echo "cat << 'EOF' > \"\$TLS_FILE\"" >> "$TARGET"
 cat "$BASEDIR/certs/client-$1.pem" >> "$TARGET"
 echo "EOF" >> "$TARGET"
 
 echo "SKIP_ENV=1" >> "$TARGET"
 cat "$BASEDIR/bin/restic-client" >> "$TARGET"
-
-echo "rm \"\$CA_FILE\"" >> "$TARGET"
-echo "rm \"\$TLS_FILE\"" >> "$TARGET"
 
 chmod +x "$TARGET"

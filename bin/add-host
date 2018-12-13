@@ -4,8 +4,6 @@ set -e
 BASEDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/..")
 BINDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
 
-touch "$BASEDIR/rclone-config"
-
 read -p "NAME: " NAME
 if [ -z "$NAME" ]; then
   echo "required"
