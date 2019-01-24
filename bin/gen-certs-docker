@@ -15,4 +15,4 @@ DIR=$(realpath "$DIR")
 
 BINDIR=$(realpath "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )")
 
-docker run --rm --volume "$BINDIR/gen-certs:/usr/local/bin/gen-certs:ro" --volume "$DIR:$DIR" restic-server gen-certs $DIR $2 $3
+docker run --rm --volume "$BINDIR/gen-certs:/usr/local/bin/gen-certs:ro" --volume "$DIR:/certs" restic-server gen-certs /certs $2 $3
