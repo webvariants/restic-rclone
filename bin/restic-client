@@ -2,6 +2,8 @@
 
 BASEDIR=$(cd "$(dirname "${BASH_SOURCE[0]}" )/.." && pwd)
 
+set -f
+
 if [ -z "$SKIP_ENV" ]; then
   if [ -z "$1" ]; then
     echo "missing name as first parameter"
